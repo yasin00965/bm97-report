@@ -116,7 +116,7 @@
     </div></div>
 
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbz53t3RwpuT1QyceHmkmDHukALhSoV40OMu-sFVzkkY44eg2gWxGDasPO80nh5PdD9ESw/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbw_nyLkEsR1tM6zigIFUpBqL3MdzOfSJ4Ygbtt0HNYMOCt7kKfsPDwoTdzYT1tjpsZkhA/exec';
         const PASSWORD = "bm1997";
 
         const $ = (selector) => document.getElementById(selector);
@@ -231,6 +231,7 @@
 
             try {
                 const res = await fetch(`${API_URL}?action=getMemberDues&memberId=${memberId}`);
+                if (!res.ok) throw new Error('Network error');
                 const dues = await res.json();
                 if (dues.error) throw new Error(dues.error);
 
@@ -254,6 +255,7 @@
             if (!confirm(`${memberName} এর ${year} সালের চাঁদা পরিশোধিত হিসেবে নিশ্চিত করবেন কি?`)) return;
             try {
                 const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'addPayment', memberId, year, memberName }), headers: {'Content-Type': 'text/plain;charset=utf-8'} });
+                if (!res.ok) throw new Error('Network error');
                 const result = await res.json();
                 if (result.status !== 'success') throw new Error(result.message);
                 await fetchMemberDues();
@@ -270,6 +272,7 @@
             const data = { action: 'addTransaction', date: $('form-date').value, type: $('form-type').value, memberId: $('form-member').value, category: $('form-category').value, amount: $('form-amount').value, description: $('form-description').value };
             try {
                 const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(data), headers: {'Content-Type': 'text/plain;charset=utf-8'} });
+                if (!res.ok) throw new Error('Network error');
                 const result = await res.json();
                 if (result.status !== 'success') throw new Error(result.message);
                 msg.textContent = 'সফলভাবে সেভ হয়েছে!'; msg.style.color = '#66bb6a';
@@ -314,6 +317,7 @@
             msg.textContent = 'ইমেইল পাঠানো হচ্ছে...';
             try {
                 const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'sendDuesReminders' }), headers: {'Content-Type': 'text/plain;charset=utf-8'} });
+                if (!res.ok) throw new Error('Network error');
                 const result = await res.json();
                 if (result.status !== 'success') throw new Error(result.message);
                 msg.textContent = result.message;
